@@ -1,0 +1,3 @@
+pi IP = 10.0.1.55
+to login to pi: ssh pi@10.0.1.55
+password is: "raspberry"
