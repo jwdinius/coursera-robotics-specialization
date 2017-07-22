@@ -72,10 +72,10 @@ class RobotControl(object):
         self.max_speed = max_speed
         self.max_omega = max_omega
         self.goals    = dijkstras(occupancy_map, x_spacing, y_spacing, pos_init, pos_goal)
-        print(self.goals)
-        self.total_goals = len(self.goals)
+        # print(self.goals)
+        self.total_goals = self.goals.shape[0]
         self.cur_goal    = 2
-        self.end_goal    = self.total_goals - 1
+        self.end_goal    = self.goals.shape[0] - 1
         self.est_pose    = None
 
         # Uncomment as completed
@@ -108,7 +108,7 @@ class RobotControl(object):
         
         # while not at goal (waypoint), command velocity
         if done:
-            #v, w = (0, 0) 
+            v, w = (0, 0) 
             if self.cur_goal < self.end_goal:
                 self.cur_goal = self.cur_goal + 1
                 done = False
@@ -117,14 +117,14 @@ class RobotControl(object):
         self.robot_sim.command_velocity(v,w)
         self.robot_sim.done = done        
         self.vel = np.array([v, w])
-        print(self.vel)
         # print(done)
 
         return
     
 def main(args):
     # Load parameters from yaml
-    param_path = 'params.yaml' # rospy.get_param("~param_path")
+    #param_path = 'params.yaml' # rospy.get_param("~param_path")
+    param_path = 'params_kftest.yaml' # rospy.get_param("~param_path")
     f = open(param_path,'r')
     params_raw = f.read()
     f.close()

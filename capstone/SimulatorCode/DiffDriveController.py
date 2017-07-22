@@ -9,11 +9,11 @@ class DiffDriveController():
     def __init__(self, max_speed, max_omega):
         # TODO for Student: Specify these parameters
         # kp > 0
-        self.kp=2.
+        self.kp=0.3
         # ka - kp > 0
-        self.ka=4.
+        self.ka=0.9
         # needs to be <0
-        self.kb=-2.
+        self.kb=0.
         self.MAX_SPEED = max_speed
         self.MAX_OMEGA = max_omega
         
@@ -33,18 +33,28 @@ class DiffDriveController():
         """
         # YOUR CODE HERE
         # compute the states from video
-        dx = goal[0] - state[0]
-        dy = goal[1] - state[1]
-        th = state[2]
+        dx = (goal[0] - state[0]).item()
+        dy = (goal[1] - state[1]).item()
+        th = state[2].item()
 
         # compute states for controller
         rh = np.sqrt(dx*dx + dy*dy)
         al = -th + np.arctan2(dy,dx)
+
+        # enforce constraints
+        if al > 3.*np.pi/2.:
+            al -= 2.*np.pi
+        elif al < -3.*np.pi/2.:
+            al += 2.*np.pi
+
         be = -th - al
 
         # compute control outputs
         v  = self.kp*rh
+        v  = np.minimum(self.MAX_SPEED, v)
         om = self.ka*al + self.kb*be
+        om = np.maximum(np.minimum(om,self.MAX_OMEGA), -self.MAX_OMEGA)
+        # print(v,om)
         # if within 5cm, we're done
         done = ( rh < .05)
 
